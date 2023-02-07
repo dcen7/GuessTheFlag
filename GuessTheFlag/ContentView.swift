@@ -14,6 +14,8 @@ struct ContentView: View {
     @State private var showingScore = false
     @State private var scoreTitle = ""
     @State private var score = 0
+    @State private var showingResult = false
+    @State private var counter = 0
     
     
     var body: some View {
@@ -66,25 +68,46 @@ struct ContentView: View {
         } message: {
             Text("Your score is \(score)")
         }
+        
+        .alert("This is the result", isPresented: $showingResult) {
+            Button("Restart", action: restart)
+        } message: {
+            Text("Your score is \(score)")
+        }
     }
     
     func flagTapped(_ number: Int) {
-        if number == correctAnswer {
-            scoreTitle = "Correct"
+        counter += 1
+        if counter == 8 {
+            showingResult = true
+            counter = 0
             score += 1
+            
         } else {
-            scoreTitle = "Wrong, that is the flag of \(countries[number])"
-            score -= 1
-            if score < 0 {
-                score = 0
+            if number == correctAnswer {
+                scoreTitle = "Correct"
+                score += 1
+            } else {
+                scoreTitle = "Wrong, that is the flag of \(countries[number])"
+                score -= 1
+                if score < 0 {
+                    score = 0
+                }
             }
+            showingScore = true
         }
-        showingScore = true
+        
     }
     
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        
+    }
+    
+    func restart() {
+        askQuestion()
+        score = 0
     }
     
 }
